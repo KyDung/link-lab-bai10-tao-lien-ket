@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isTeacher() {
+      return request.auth != null && exists(/databases/$(database)/documents/teachers/$(request.auth.uid));
+    }
+    match /teachers/{uid} { allow read, write: if false; }
+    match /lessons/{lessonId} {
+      allow read: if isTeacher();
+      allow create, update: if lessonId.matches('^[a-z0-9-]{1,40}$')
+        && request.resource.data.keys().hasOnly(['title', 'updatedAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 150
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isTeacher();
+      match /students/{studentId} {
+        function validSubmission() {
+          let d = request.resource.data;
+          return lessonId.matches('^[a-z0-9-]{1,40}$')
+            && studentId.matches('^[A-Za-z0-9]{1,15}_[A-Za-z0-9]{1,40}$')
+            && d.keys().hasOnly(['lessonId','student','learning','practice','progress','final','updatedAt'])
+            && d.keys().hasAll(['lessonId','student','learning','practice','progress','updatedAt'])
+            && d.lessonId == lessonId
+            && d.student is map && d.student.keys().hasOnly(['name','className'])
+            && d.student.name is string && d.student.name.size() > 0 && d.student.name.size() <= 60
+            && d.student.className is string && d.student.className.size() > 0 && d.student.className.size() <= 15
+            && d.learning is list && d.learning.size() <= 20
+            && d.practice is list && d.practice.size() <= 20
+            && d.progress is map
+            && (!('final' in d) || (d.final is map && d.final.code is string && d.final.code.size() <= 100000))
+            && d.updatedAt == request.time;
+        }
+        allow create, update: if validSubmission();
+        allow read, delete: if isTeacher();
+      }
+    }
+  }
+}

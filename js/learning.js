@@ -1,0 +1,51 @@
+/* Mỗi bài: lời dẫn ngắn (intro) → mã mẫu tô màu có chú thích từng thành phần (parts)
+   → khung kết quả cho thấy tác dụng của thẻ (previewHtml, effect) → nhiệm vụ viết thêm vào mã có sẵn (starter).
+   parts = [đoạn mã, chú thích (để trống nếu không cần), số màu 1-5] */
+const FILLER='Em đọc kỹ lý thuyết, làm lại các ví dụ trong sách và ghi chú những phần còn chưa hiểu. Sau đó làm bài tập từ dễ đến khó, đối chiếu đáp án và sửa lỗi sai.';
+const LONG_PARAGRAPHS=Array.from({length:5},(_,i)=>`<p>Phần ${i+1}. ${FILLER}</p>`).join('\n');
+const Learning={activities:[
+ {id:'learn-absolute',name:'Liên kết & URL',title:'Thẻ <a> biến chữ thành liên kết',current:'index.html',
+  intro:'Thẻ <a> biến một đoạn chữ thành liên kết. URL tuyệt đối là địa chỉ đầy đủ của một website, luôn bắt đầu bằng https://.',
+  parts:[['<a ','Thẻ a: biến phần chữ bên trong thành liên kết',1],['href="https://www.wikipedia.org/"','href: địa chỉ nơi liên kết dẫn tới (URL tuyệt đối)',2],['>','',1],['Khám phá Wikipedia','Chữ hiện trên trang, là phần em bấm vào',3],['</a>','Đóng thẻ a: hết liên kết',1]],
+  previewHtml:'<p><b>Chữ thường</b> (bấm không có gì): Khám phá Wikipedia</p>\n<p><b>Chữ trong thẻ a</b> (bấm được): <a href="https://www.wikipedia.org/">Khám phá Wikipedia</a></p>',
+  effect:'Hai dòng có cùng chữ, nhưng chỉ dòng nằm trong thẻ <a> bấm được: bấm vào sẽ mở website ghi trong href ở tab mới.',
+  starter:'<h1>Trang giới thiệu lớp 12A</h1>\n<p>Em muốn tìm hiểu thêm về đất nước Việt Nam?</p>\n<!-- Viết liên kết dẫn tới Wikipedia ngay dưới dòng này, giống mẫu ở trên -->\n',
+  task:["Mã bên trái đã có sẵn tiêu đề và một câu hỏi.", "Viết thêm một liên kết có chữ “Tìm hiểu thêm”, giống mẫu ở trên.", "href là một URL tuyệt đối. URL dài thì bấm nút “URL gợi ý” để chèn."],
+  urls:[{label:'Wikipedia',url:'https://www.wikipedia.org/'},{label:'MDN Web Docs',url:'https://developer.mozilla.org/'},{label:'Khan Academy',url:'https://www.khanacademy.org/'}],
+  validate:html=>Validators.link(html,{kind:'absolute'})},
+ {id:'learn-child',name:'Đi vào thư mục',title:'Đường dẫn tương đối: đi vào thư mục con',current:'index.html',
+  intro:'Đường dẫn tương đối được tính từ tệp em đang viết (ở đây là index.html). Viết tên thư mục, dấu /, rồi tên tệp để đi vào một thư mục con.',
+  parts:[['<a ','Thẻ a: tạo liên kết',1],['href="Vault/khoa_mat_ma.html"','href: Vault/ là đi vào thư mục Vault, khoa_mat_ma.html là tệp cần mở',2],['>','',1],['Mở kho mật mã','Chữ em bấm vào',3],['</a>','Đóng thẻ a',1]],
+  previewHtml:'<p>Em đang ở sảnh chính (index.html).</p>\n<p><a href="Vault/khoa_mat_ma.html">Mở kho mật mã</a></p>',
+  effect:'Bấm liên kết: trình duyệt đi từ index.html vào thư mục Vault và mở tệp khoa_mat_ma.html. Hộp “Trang đích” cho em thấy tệp được mở.',
+  starter:'<h1>Sảnh chính</h1>\n<p>Phía sau cánh cửa này là kho mật mã.</p>\n<!-- Viết liên kết mở tệp khoa_mat_ma.html trong thư mục Vault, giống mẫu ở trên -->\n',
+  task:["Em đang ở index.html.", "Viết thêm liên kết có chữ “Vào kho”.", "Liên kết mở tệp khoa_mat_ma.html nằm trong thư mục Vault.", "Chú ý viết đúng chữ hoa, chữ thường."],
+  validate:html=>Validators.link(html,{kind:'relative',target:'Vault/khoa_mat_ma.html',current:'index.html'})},
+ {id:'learn-parent',name:'Đi lên một cấp',title:'Dùng ../ để đi lên thư mục cha',current:'Vault/khoa_mat_ma.html',
+  intro:'Lúc này em đang ở tệp nằm trong thư mục Vault. Dùng ../ để đi lên một thư mục (gọi là thư mục cha), rồi mới mở tệp cần đến.',
+  parts:[['<a ','Thẻ a: tạo liên kết',1],['href="../index.html"','href: ../ là đi lên một thư mục (ra khỏi Vault), index.html là tệp cần mở',2],['>','',1],['Trở về sảnh','Chữ em bấm vào',3],['</a>','Đóng thẻ a',1]],
+  previewHtml:'<p>Em đang ở kho mật mã (Vault/khoa_mat_ma.html).</p>\n<p><a href="../index.html">Trở về sảnh</a></p>',
+  effect:'Bấm liên kết: trình duyệt đi lên một thư mục (ra khỏi Vault) rồi mở index.html. Nếu thiếu ../ thì trình duyệt tìm index.html ngay trong Vault và không thấy.',
+  starter:'<h1>Kho mật mã</h1>\n<p>Em đã đọc xong bí mật trong kho. Đã đến lúc quay về sảnh chính.</p>\n<!-- Viết liên kết quay về index.html, giống mẫu ở trên -->\n',
+  task:["Em đang đứng ở Vault/khoa_mat_ma.html.", "Viết thêm liên kết có chữ “Quay lại”.", "Liên kết về index.html bằng đường dẫn tương đối."],
+  validate:html=>Validators.link(html,{kind:'relative',target:'index.html',current:'Vault/khoa_mat_ma.html'})},
+ {id:'learn-anchor',name:'Liên kết neo',title:'Liên kết neo: cuộn tới một vị trí trong trang',current:'phong_giam.html',
+  intro:'Liên kết neo giúp cuộn tới một vị trí trong cùng trang. Cần hai phần: liên kết có href="#tên" và đoạn đích có id="tên".',
+  parts:[['<a ','Thẻ a: tạo liên kết',1],['href="#cuoi_trang"','href: dấu # rồi tên id. Nghĩa là “cuộn tới chỗ có id cuoi_trang”',2],['>','',1],['Xuống cuối trang','Chữ em bấm vào',3],['</a>','Đóng thẻ a',1],['\n'],['<p>…các đoạn văn dài (rút gọn)…</p>'],['\n'],['<p ','Thẻ p: đoạn văn ở cuối trang, là nơi sẽ cuộn tới',4],['id="cuoi_trang"','id: tên đánh dấu cho đoạn này. Viết giống tên trong href nhưng không có dấu #',5],['>','',4],['Em đã đến cuối trang!','Nội dung nơi đến',4],['</p>','',4]],
+  previewHtml:'<h2>Đề cương ôn tập</h2>\n<p><a href="#cuoi_trang">Xuống cuối trang</a></p>\n'+LONG_PARAGRAPHS+'\n<p id="cuoi_trang">Em đã đến cuối trang!</p>',
+  previewHeight:220,
+  effect:'Trang rất dài, nhưng khi bấm “Xuống cuối trang”, trang tự cuộn thẳng tới đoạn có id="cuoi_trang" và tô vàng đoạn đó. Không có liên kết neo thì em phải tự kéo chuột xuống.',
+  starter:'<h1>Đề cương ôn tập Tin học 12</h1>\n<!-- Thêm liên kết “Xuống cuối trang” ở đây, giống mẫu ở trên -->\n'+LONG_PARAGRAPHS+'\n<p>Hết đề cương. Chúc em ôn tập tốt!</p>\n',
+  task:["Em có sẵn một đề cương rất dài.", "Thêm liên kết có chữ “Xuống cuối trang” và href=\"#cuoi_trang\".", "Thêm id=\"cuoi_trang\" vào đoạn văn cuối cùng.", "Xem kết quả bên phải rồi bấm thử liên kết."],
+  validate:html=>Validators.link(html,{kind:'anchor',target:'cuoi_trang'})},
+ {id:'learn-image',name:'Liên kết ảnh',title:'Đặt ảnh vào trong thẻ <a> để ảnh bấm được',current:'index.html',
+  intro:'Muốn bấm vào một bức ảnh để đi đến trang khác, em đặt thẻ <img> vào bên trong thẻ <a>. href là trang sẽ mở ra, còn src là nơi lấy ảnh.',
+  parts:[['<a ','Thẻ a: tạo liên kết',1],['href="Vault/khoa_mat_ma.html"','href: bấm vào ảnh thì đi đến đâu',2],['>','',1],['\n  '],['<img ','Thẻ img: hiện một bức ảnh (đặt bên trong thẻ a)',3],['src="images/ket_sat.jpg"','src: lấy ảnh ở đâu',4],[' '],['alt="Mở két sắt"','alt: mô tả ảnh bằng chữ (hiện khi ảnh lỗi, và giúp máy đọc màn hình)',5],['>','',3],['\n'],['</a>','Đóng thẻ a',1]],
+  previewHtml:'<p><b>Ảnh thường</b> (bấm không có gì):</p>\n<img src="images/ket_sat.jpg" alt="Mở két sắt">\n<p><b>Ảnh trong thẻ a</b> (bấm được):</p>\n<a href="Vault/khoa_mat_ma.html"><img src="images/ket_sat.jpg" alt="Mở két sắt"></a>',
+  previewHeight:240,
+  effect:'Hai bức ảnh giống nhau, nhưng chỉ ảnh nằm trong thẻ <a> bấm được: bấm vào sẽ mở kho Vault. Nếu ảnh bị lỗi, chữ trong alt sẽ hiện thay ảnh.',
+  starter:'<h1>Sảnh chính</h1>\n<p>Bức ảnh két sắt dưới đây chưa bấm được.</p>\n<!-- Đặt ảnh vào trong một liên kết mở Vault/khoa_mat_ma.html, giống mẫu ở trên -->\n<img src="images/ket_sat.jpg" alt="Mở két sắt">\n',
+  task:["Em đang ở index.html, bức ảnh két sắt đã có sẵn.", "Bọc ảnh trong thẻ <a> có href mở Vault/khoa_mat_ma.html.", "Giữ nguyên alt mô tả ảnh."],
+  validate:html=>Validators.link(html,{kind:'relative',target:'Vault/khoa_mat_ma.html',current:'index.html',image:'images/ket_sat.jpg'})}
+],render(index=0){Activity.render('learning',this.activities,index)}};
+Learning.activities.forEach(a=>{a.sample=a.parts.map(p=>p[0]).join('')});
