@@ -232,3 +232,7 @@ a.review-link:hover{border-color:var(--teal);background:#f1f8f5}
 .task-list li::marker{color:var(--amber)}
 
 #login-hint{display:block;margin-top:6px;font-weight:500;min-height:1.2em}
+
+.row-actions{display:flex;gap:8px;flex-wrap:wrap}
+button.danger{background:#fff;color:var(--red);border:1px solid #efc4c0}
+button.danger:hover{background:var(--red-bg)}
